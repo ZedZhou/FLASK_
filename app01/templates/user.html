@@ -1,0 +1,76 @@
+{% extends 'bootstrap_demo.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% import '_macros.html' as macros %}
+
+{% block scripts %}
+    {{ super() }}
+    {{ moment.include_moment() }}
+    {{ pagedown.include_pagedown() }}
+            <link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}">
+
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="container">
+        <div class="page-header">
+
+            {% for message in get_flashed_messages() %}
+                <div class="alert alert-warning">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    {{ message }}
+                </div>
+            {% endfor %}
+
+            <h1>Hello</h1> <br>
+
+            {% if current_user.is_authenticated %}
+                <img class="img-rounded" src="{{ user.gravatar(size=100) }}">
+
+                <div class="my_header">
+                    <h3>欢迎回来,{{ current_user.username }}!</h3>
+
+                    <h3>添加说说</h3>
+                </div>
+                {{ wtf.quick_form(form2) }}
+            {% else %}
+                <h3>您还未登录</h3>
+            {% endif %}
+
+            {{ moment.lang('es') }}
+            <p>当地时间为: {{ moment(current_time).format('LL') }}</p>
+            <p>时差: {{ moment(current_time).fromNow(refresh=True) }}</p>
+            {#             {{ wtf.quick_form(form) }}#}
+        </div>
+    </div>
+
+
+
+    {% if current_user.is_authenticated %}
+        {#        {% if current_user.can(Permission.WRITE_ARTICLE) %}#}
+
+        <div>
+            <ul>
+                <li {% if not show_followed %}class="active" {% endif %}><a href="{{ url_for('.show_all') }}"> 所有文章</a>
+                </li>
+                {% if current_user.is_authenticated %}
+                    <li {% if show_followed %}class="active" {% endif %}><a href="{{ url_for('.show_followed') }}">关注用户的文章</a>
+                    </li>
+                {% endif %}
+{#                <li>{{ show_followed }}</li>#}
+            </ul>
+
+        </div>
+        {% include '_posts.html' %}
+        {#        {% endif %}#}
+    {% endif %}
+
+    <div class="pagination">
+        {{ macros.pagination_widget(pagination,'.hello_world') }}
+    </div>
+
+{% endblock %}
+
+
+
